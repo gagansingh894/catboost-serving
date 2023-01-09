@@ -27,7 +27,7 @@ func (c *cbDeploymentService) GetPredictions(ctx context.Context, in *pb.GetPred
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	preds, err := c.modelManager.GetPredictions(in.ModelName, parseProtoToModelInputs(in), len(in.InputData), [][]string{}, 0)
+	preds, err := c.modelManager.GetPredictions(in.ModelName, parseProtoToModelInputs(in), [][]string{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get predictions: %w", err)
 	}
@@ -50,17 +50,14 @@ func parsePredictionsToProto(in []float64) map[string]float64 {
 }
 
 func parseProtoToModelInputs(in *pb.GetPredictionsRequest) [][]float32 {
-	var out [][]float32
-	data := make(map[string][]float32)
+	out := make([][]float32, len(in.InputData))
 
-	for _, input := range in.InputData {
-		for key, value := range input.Input {
-			data[key] = append(data[key], value)
+	for i, input := range in.InputData {
+		var row []float32
+		for _, value := range input.Input {
+			row = append(row, value)
 		}
-	}
-
-	for _, value := range data {
-		out = append(out, value)
+		out[i] = row
 	}
 
 	return out
