@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package cbserving.v1;
+option go_package = "/internal/pkg/pb/cbserving;cbserving";
+
+service DeploymentService {
+  rpc GetPredictions(GetPredictionsRequest) returns (GetPredictionsResponse);
+}
+
+
+enum ModelTask {
+  MODEL_TASK_UNSPECIFIED = 0;
+  MODEL_TASK_REGRESSION = 1;
+  MODEL_TASK_BINARY_CLASSIFICATION = 2;
+}
+
+message GetPredictionsRequest {
+  string model_name = 1;
+  ModelTask model_task = 2;
+  message InputData {
+    map<string, float> input = 1;
+  }
+  repeated InputData input_data = 3;
+}
+
+message GetPredictionsResponse {
+  string model_name = 1;
+  ModelTask model_task = 2;
+  map<string, double> predictions = 3;
+}
+
