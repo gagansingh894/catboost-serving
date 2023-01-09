@@ -54,7 +54,7 @@ type Model interface {
 	GetFloatFeaturesCount() int
 	GetCatFeaturesCount() int
 	Close()
-	Predict(floats [][]float32, floatLength int, cats [][]string, catLength int) ([]float64, error)
+	Predict(floats [][]float32, cats [][]string) ([]float64, error)
 }
 
 // model is a wrapper over ModelCalcerHandler
@@ -73,9 +73,11 @@ func (m *model) GetCatFeaturesCount() int {
 }
 
 // Predict returns raw predictions for specified data points
-func (m *model) Predict(floats [][]float32, floatLength int, cats [][]string, catLength int) ([]float64, error) {
+func (m *model) Predict(floats [][]float32, cats [][]string) ([]float64, error) {
 	nSamples := len(floats)
 	results := make([]float64, nSamples)
+	floatLength := m.GetFloatFeaturesCount()
+	catLength := m.GetCatFeaturesCount()
 
 	floatsC := C.makeFloatArray(C.int(nSamples))
 	defer C.free(unsafe.Pointer(floatsC))

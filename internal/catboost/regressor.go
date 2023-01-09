@@ -28,8 +28,8 @@ func NewRegressor(filename string) (Model, error) {
 }
 
 // Predict returns raw predictions for specified data points
-func (r *regressor) Predict(floats [][]float32, floatLength int, cats [][]string, catLength int) ([]float64, error) {
-	preds, err := r.model.Predict(floats, floatLength, cats, catLength)
+func (r *regressor) Predict(floats [][]float32, cats [][]string) ([]float64, error) {
+	preds, err := r.model.Predict(floats, cats)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get predictions for regressor: %w", err)
 	}

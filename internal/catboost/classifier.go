@@ -33,8 +33,8 @@ func sigmoid(probit float64) float64 {
 }
 
 // Predict returns raw predictions for specified data points
-func (c *classifier) Predict(floats [][]float32, floatLength int, cats [][]string, catLength int) ([]float64, error) {
-	preds, err := c.model.Predict(floats, floatLength, cats, catLength)
+func (c *classifier) Predict(floats [][]float32, cats [][]string) ([]float64, error) {
+	preds, err := c.model.Predict(floats, cats)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get predictions for classifier: %w", err)
 	}
