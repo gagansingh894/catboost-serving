@@ -24,19 +24,23 @@ func main() {
 
 	// prepare request
 	var times int64
+	var records int
 
 	for i := 0; i < 500; i++ {
-		req := createPredictionRequest(rand.Intn(500)+1, 125, "model_v4")
+		num := rand.Intn(500) + 1
+		req := createPredictionRequest(num, 125, "model_v4")
 		start := time.Now()
 		_, err = cbmClient.GetPredictions(context.Background(), req)
 		if err != nil {
 			log.Fatalf("failed to call CBM Service: %v", err)
 		}
 		elapsed := time.Since(start)
-		fmt.Println("time taken: ", elapsed.Milliseconds())
+		fmt.Println("time taken: ", elapsed.Milliseconds(), " for", strconv.Itoa(num), " records")
 		times += elapsed.Milliseconds()
+		records += num
 	}
 	fmt.Println("average time taken:", times/500)
+	fmt.Println("average records:", records/500)
 
 }
 
