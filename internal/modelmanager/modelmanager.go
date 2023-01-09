@@ -10,7 +10,7 @@ import (
 
 type ModelManager interface {
 	Initialize() error
-	GetPredictions(modelName string, floats [][]float32, floatLength int, cats [][]string, catLength int) ([]float64, error)
+	GetPredictions(modelName string, floats [][]float32, cats [][]string) ([]float64, error)
 }
 
 type modelManager struct {
@@ -54,13 +54,13 @@ func (m *modelManager) Initialize() error {
 	return nil
 }
 
-func (m *modelManager) GetPredictions(modelName string, floats [][]float32, floatLength int, cats [][]string, catLength int) ([]float64, error) {
+func (m *modelManager) GetPredictions(modelName string, floats [][]float32, cats [][]string) ([]float64, error) {
 	model, ok := m.models[modelName]
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("failed to find model: %s", modelName))
 	}
 
-	preds, err := model.Predict(floats, floatLength, cats, catLength) // todo: make it more dynamic. Need to train a model with category features and then test
+	preds, err := model.Predict(floats, cats) // todo: make it more dynamic. Need to train a model with category features and then test
 	if err != nil {
 		fmt.Printf("failed to predicti: %s", err)
 	}
