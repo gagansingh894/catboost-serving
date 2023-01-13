@@ -1,4 +1,4 @@
-module github.com/gagansingh894/catboost-serving
+module github.com/gagansingh894/catboost-serving/go
 
 go 1.19
 

@@ -3,7 +3,7 @@ package modelmanager
 import (
 	"errors"
 	"fmt"
-	"github.com/gagansingh894/catboost-serving/internal/catboost"
+	"github.com/gagansingh894/catboost-serving/go/internal/catboost"
 	"os"
 	"strings"
 )

@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	pb "github.com/gagansingh894/catboost-serving/internal/pkg/pb/cbserving"
+	pb "github.com/gagansingh894/catboost-serving/go/internal/pkg/pb/cbserving"
 	"log"
 	"math"
 	"math/rand"
@@ -100,7 +100,7 @@ func dividePredictionRequest(in *pb.GetPredictionsRequest, n int) []*pb.GetPredi
 func createPredictionRequestInputData(numRecords, numFeatures int) []*pb.GetPredictionsRequest_InputData {
 	inputData := make([]*pb.GetPredictionsRequest_InputData, numRecords)
 
-	for i, _ := range inputData {
+	for i := range inputData {
 		data := make(map[string]float32)
 		for j := 0; j < numFeatures; j++ {
 			featureName := fmt.Sprintf("feature_%s", strconv.Itoa(j))

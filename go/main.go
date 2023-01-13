@@ -2,18 +2,17 @@ package main
 
 import (
 	"fmt"
-	v1 "github.com/gagansingh894/catboost-serving/api/v1"
-	"github.com/gagansingh894/catboost-serving/internal/modelmanager"
-	pb "github.com/gagansingh894/catboost-serving/internal/pkg/pb/cbserving"
+	v1 "github.com/gagansingh894/catboost-serving/go/api/v1"
+	"github.com/gagansingh894/catboost-serving/go/internal/modelmanager"
+	pb "github.com/gagansingh894/catboost-serving/go/internal/pkg/pb/cbserving"
 	"google.golang.org/grpc"
 	"log"
-	"math/rand"
 	"net"
 )
 
 func main() {
 	fmt.Println("Welcome to CATBOOST Serving!")
-	modelManager := modelmanager.NewModelManager("artefacts/")
+	modelManager := modelmanager.NewModelManager("../artefacts/")
 	err := modelManager.Initialize()
 	if err != nil {
 		log.Fatalf("failed to initialize model manager: %s", err)
@@ -33,18 +32,4 @@ func main() {
 		log.Fatalf("failed to serve: %v", err)
 	}
 
-}
-
-func generateInputs(numFeatures, numRecords int) [][]float32 {
-	data := make([][]float32, numRecords) // numFeatures
-	rows := make([]float32, numFeatures)  // numRecords
-
-	for i := 0; i < numRecords; i++ {
-		for j := 0; j < numFeatures; j++ {
-			rows[j] = rand.Float32() * float32(rand.Intn(1000))
-		}
-		data[i] = rows
-	}
-
-	return data
 }

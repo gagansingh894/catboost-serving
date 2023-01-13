@@ -3,9 +3,8 @@ package v1
 import (
 	"context"
 	"fmt"
-	"github.com/gagansingh894/catboost-serving/internal/modelmanager"
-	pb "github.com/gagansingh894/catboost-serving/internal/pkg/pb/cbserving"
-	"math/rand"
+	"github.com/gagansingh894/catboost-serving/go/internal/modelmanager"
+	pb "github.com/gagansingh894/catboost-serving/go/internal/pkg/pb/cbserving"
 	"strconv"
 	"time"
 )
@@ -61,31 +60,4 @@ func parseProtoToModelInputs(in *pb.GetPredictionsRequest) [][]float32 {
 	}
 
 	return out
-}
-
-func parseProtoToModelInputsOld() [][]float32 {
-	out := make([]*pb.GetPredictionsRequest_InputData, 500)
-	data := make(map[string]float32)
-
-	for i := 0; i < 2; i++ {
-		data[strconv.Itoa(i)] = rand.Float32()
-	}
-
-	for i := 0; i < 500; i++ {
-		out[i] = &pb.GetPredictionsRequest_InputData{Input: data}
-	}
-
-	want := make([][]float32, 500)
-	rows := make([]float32, 200)
-
-	for i, o := range out {
-		k := 0
-		for _, v := range o.Input {
-			rows[k] = v
-			k += 1
-		}
-		want[i] = rows
-	}
-
-	return want
 }
