@@ -10,7 +10,7 @@ WORKDIR /build
 
 ADD . .
 
-RUN CGO_ENABLED=1 GOOS=linux go build -o catboost-serving
+RUN CGO_ENABLED=1 go build -o catboost-serving
 
 FROM ubuntu:20.04
 
