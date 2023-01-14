@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	v1 "github.com/gagansingh894/catboost-serving/api/v1"
 	"github.com/gagansingh894/catboost-serving/internal/modelmanager"
@@ -11,18 +12,23 @@ import (
 )
 
 func main() {
+	// parse cmd arguments
+	artefactsPathPtr := flag.String("artefacts-path", "artefacts/", " path to directory containing models")
+	portPtr := flag.String("port", "9090", " port number for gRPC server")
+	flag.Parse()
+
 	fmt.Println("Welcome to CATBOOST Serving!")
-	modelManager := modelmanager.NewModelManager("artefacts/")
+	modelManager := modelmanager.NewModelManager(*artefactsPathPtr)
 	err := modelManager.Initialize()
 	if err != nil {
 		log.Fatalf("failed to initialize model manager: %s", err)
 	}
 
-	// start grpc server
+	// configure grpc server
 	cbDeploymentService := v1.NewCBDeploymentService(modelManager)
 	cbDeploymentServer := grpc.NewServer()
 	pb.RegisterDeploymentServiceServer(cbDeploymentServer, cbDeploymentService)
-	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", "9090"))
+	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", *portPtr))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -31,5 +37,4 @@ func main() {
 	if err := cbDeploymentServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
-
 }
