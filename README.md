@@ -17,7 +17,9 @@ docker run -p <port>:<port> --rm catboost-serving ./catboost-serving -port 9091
 ```
 1. git clone https://github.com/catboost/catboost.git
 
-2. make build. The output files are generated in build folder
+2. make build. The output files are generated in build folder.
 
 3. if you are using m1, make build-m1
+
+You will be asked to enter your user password.
 ```
