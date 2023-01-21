@@ -60,9 +60,10 @@ func main() {
 
 		if *isParallelPtr {
 			makeParallelRequests(cbmClient, req)
+		} else {
+			makeSingleRequests(cbmClient, req)
 		}
 
-		makeSingleRequests(cbmClient, req)
 		elapsed := time.Since(start)
 
 		records += *numRecordsPtr
