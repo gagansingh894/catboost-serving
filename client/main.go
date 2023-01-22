@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	pb "github.com/gagansingh894/catboost-serving/internal/pkg/pb/cbserving"
+	"github.com/gagansingh894/catboost-serving/pkg/pb/cbserving"
 	"log"
 	"math"
 	"math/rand"
@@ -30,7 +30,7 @@ func main() {
 	}
 
 	defer conn.Close()
-	cbmClient := pb.NewDeploymentServiceClient(conn)
+	cbmClient := cbserving.NewDeploymentServiceClient(conn)
 
 	var (
 		records   int
@@ -74,18 +74,18 @@ func main() {
 	fmt.Println("average records:", records/numIter)
 }
 
-func dividePredictionRequest(in *pb.GetPredictionsRequest, n int) []*pb.GetPredictionsRequest {
+func dividePredictionRequest(in *cbserving.GetPredictionsRequest, n int) []*cbserving.GetPredictionsRequest {
 	s := int(math.Ceil(float64(len(in.InputData) / n)))
-	out := make([]*pb.GetPredictionsRequest, n)
+	out := make([]*cbserving.GetPredictionsRequest, n)
 
 	t := len(in.InputData)
 	for i := 0; i < n; i++ {
-		var inputDatas []*pb.GetPredictionsRequest_InputData
+		var inputDatas []*cbserving.GetPredictionsRequest_InputData
 		for j := 0; j < s; j++ {
 			inputDatas = append(inputDatas, in.InputData[j])
 		}
 
-		out[i] = &pb.GetPredictionsRequest{
+		out[i] = &cbserving.GetPredictionsRequest{
 			ModelName: in.ModelName,
 			ModelTask: in.ModelTask,
 			InputData: inputDatas,
@@ -98,8 +98,8 @@ func dividePredictionRequest(in *pb.GetPredictionsRequest, n int) []*pb.GetPredi
 	return out
 }
 
-func createPredictionRequestInputData(numRecords, numFeatures int) []*pb.GetPredictionsRequest_InputData {
-	inputData := make([]*pb.GetPredictionsRequest_InputData, numRecords)
+func createPredictionRequestInputData(numRecords, numFeatures int) []*cbserving.GetPredictionsRequest_InputData {
+	inputData := make([]*cbserving.GetPredictionsRequest_InputData, numRecords)
 
 	for i := range inputData {
 		data := make(map[string]float32)
@@ -107,31 +107,31 @@ func createPredictionRequestInputData(numRecords, numFeatures int) []*pb.GetPred
 			featureName := fmt.Sprintf("feature_%s", strconv.Itoa(j))
 			data[featureName] = rand.Float32() * float32(rand.Intn(20))
 		}
-		inputData[i] = &pb.GetPredictionsRequest_InputData{Input: data}
+		inputData[i] = &cbserving.GetPredictionsRequest_InputData{Input: data}
 	}
 
 	return inputData
 }
 
-func createPredictionRequest(in []*pb.GetPredictionsRequest_InputData, modelName string) *pb.GetPredictionsRequest {
-	return &pb.GetPredictionsRequest{
+func createPredictionRequest(in []*cbserving.GetPredictionsRequest_InputData, modelName string) *cbserving.GetPredictionsRequest {
+	return &cbserving.GetPredictionsRequest{
 		ModelName: modelName,
-		ModelTask: pb.ModelTask_MODEL_TASK_REGRESSION,
+		ModelTask: cbserving.ModelTask_MODEL_TASK_REGRESSION,
 		InputData: in,
 	}
 }
 
-func makeSingleRequests(c pb.DeploymentServiceClient, r *pb.GetPredictionsRequest) {
+func makeSingleRequests(c cbserving.DeploymentServiceClient, r *cbserving.GetPredictionsRequest) {
 	_, err := c.GetPredictions(context.Background(), r)
 	if err != nil {
 		log.Fatalf("failed to call CBM Service: %v", err)
 	}
 }
 
-func makeParallelRequests(c pb.DeploymentServiceClient, r *pb.GetPredictionsRequest) {
+func makeParallelRequests(c cbserving.DeploymentServiceClient, r *cbserving.GetPredictionsRequest) {
 	numPartitions := 4
 	reqs := dividePredictionRequest(r, numPartitions)
-	out := make([]*pb.GetPredictionsResponse, numPartitions)
+	out := make([]*cbserving.GetPredictionsResponse, numPartitions)
 	g, ctx := errgroup.WithContext(context.Background())
 
 	for j := 0; j < numPartitions; j++ {
@@ -153,7 +153,7 @@ func makeParallelRequests(c pb.DeploymentServiceClient, r *pb.GetPredictionsRequ
 	_ = combinePredictions(out)
 }
 
-func combinePredictions(in []*pb.GetPredictionsResponse) []float64 {
+func combinePredictions(in []*cbserving.GetPredictionsResponse) []float64 {
 	var out []float64
 	for _, predResponse := range in {
 		for _, pred := range predResponse.Predictions {

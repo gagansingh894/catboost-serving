@@ -5,7 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/gagansingh894/catboost-serving/api/v1"
 	"github.com/gagansingh894/catboost-serving/internal/modelmanager"
-	pb "github.com/gagansingh894/catboost-serving/internal/pkg/pb/cbserving"
+	pb "github.com/gagansingh894/catboost-serving/pkg/pb/cbserving"
 	"google.golang.org/grpc"
 	"log"
 	"net"

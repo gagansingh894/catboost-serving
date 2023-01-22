@@ -4,25 +4,25 @@ import (
 	"context"
 	"fmt"
 	"github.com/gagansingh894/catboost-serving/internal/modelmanager"
-	pb "github.com/gagansingh894/catboost-serving/internal/pkg/pb/cbserving"
+	"github.com/gagansingh894/catboost-serving/pkg/pb/cbserving"
 	"strconv"
 	"time"
 )
 
 type cbDeploymentService struct {
-	pb.UnimplementedDeploymentServiceServer
+	cbserving.UnimplementedDeploymentServiceServer
 	modelManager modelmanager.ModelManager
 }
 
-var _ pb.DeploymentServiceServer = (*cbDeploymentService)(nil)
+var _ cbserving.DeploymentServiceServer = (*cbDeploymentService)(nil)
 
-func NewCBDeploymentService(modelManager modelmanager.ModelManager) pb.DeploymentServiceServer {
+func NewCBDeploymentService(modelManager modelmanager.ModelManager) cbserving.DeploymentServiceServer {
 	return &cbDeploymentService{
 		modelManager: modelManager,
 	}
 }
 
-func (c *cbDeploymentService) GetPredictions(ctx context.Context, in *pb.GetPredictionsRequest) (*pb.GetPredictionsResponse, error) {
+func (c *cbDeploymentService) GetPredictions(ctx context.Context, in *cbserving.GetPredictionsRequest) (*cbserving.GetPredictionsResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -31,7 +31,7 @@ func (c *cbDeploymentService) GetPredictions(ctx context.Context, in *pb.GetPred
 		return nil, fmt.Errorf("failed to get predictions: %w", err)
 	}
 
-	return &pb.GetPredictionsResponse{
+	return &cbserving.GetPredictionsResponse{
 		ModelTask:   in.ModelTask,
 		ModelName:   in.ModelName,
 		Predictions: parsePredictionsToProto(preds),
@@ -48,7 +48,7 @@ func parsePredictionsToProto(in []float64) map[string]float64 {
 	return out
 }
 
-func parseProtoToModelInputs(in *pb.GetPredictionsRequest) [][]float32 {
+func parseProtoToModelInputs(in *cbserving.GetPredictionsRequest) [][]float32 {
 	out := make([][]float32, len(in.InputData))
 
 	for i, input := range in.InputData {
