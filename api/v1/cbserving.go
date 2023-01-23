@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gagansingh894/catboost-serving/internal/modelmanager"
 	"github.com/gagansingh894/catboost-serving/pkg/pb/cbserving"
-	"strconv"
 	"time"
 )
 
@@ -32,20 +31,9 @@ func (c *cbDeploymentService) GetPredictions(ctx context.Context, in *cbserving.
 	}
 
 	return &cbserving.GetPredictionsResponse{
-		ModelTask:   in.ModelTask,
 		ModelName:   in.ModelName,
-		Predictions: parsePredictionsToProto(preds),
+		Predictions: preds,
 	}, nil
-}
-
-func parsePredictionsToProto(in []float64) map[string]float64 {
-	out := make(map[string]float64)
-
-	for i, v := range in {
-		out[strconv.Itoa(i)] = v
-	}
-
-	return out
 }
 
 func parseProtoToModelInputs(in *cbserving.GetPredictionsRequest) [][]float32 {

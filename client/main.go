@@ -87,7 +87,6 @@ func dividePredictionRequest(in *cbserving.GetPredictionsRequest, n int) []*cbse
 
 		out[i] = &cbserving.GetPredictionsRequest{
 			ModelName: in.ModelName,
-			ModelTask: in.ModelTask,
 			InputData: inputDatas,
 		}
 		t -= s
@@ -116,7 +115,6 @@ func createPredictionRequestInputData(numRecords, numFeatures int) []*cbserving.
 func createPredictionRequest(in []*cbserving.GetPredictionsRequest_InputData, modelName string) *cbserving.GetPredictionsRequest {
 	return &cbserving.GetPredictionsRequest{
 		ModelName: modelName,
-		ModelTask: cbserving.ModelTask_MODEL_TASK_REGRESSION,
 		InputData: in,
 	}
 }
